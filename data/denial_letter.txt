@@ -1,0 +1,69 @@
+MedAdvantage Premier Plan
+Prior Authorization Appeals Department
+P.O. Box 45200, Phoenix, AZ 85067
+Phone: 1-800-555-0194 | Fax: 1-800-555-0195
+appeals@medadvantagepremier.com
+
+Date: April 15, 2025
+Reference Number: PA-2025-44921
+
+RE: NOTICE OF PRIOR AUTHORIZATION DENIAL
+
+Patient Name: Sarah Chen
+Member ID: MCR-2024-887234
+Date of Birth: March 14, 1968
+Provider: Dr. Anita Rajan, MD — Southwest Oncology Associates
+NPI: 1234567890
+
+Requested Service: Pembrolizumab (Keytruda) 200mg IV every 3 weeks
+CPT/HCPCS Code: J9271
+Diagnosis Code: C34.11
+
+Dear Dr. Rajan,
+
+After careful review of the prior authorization request submitted on April 10, 2025, 
+MedAdvantage Premier Plan has determined that the requested service does not meet the 
+criteria for medical necessity under your member's benefit plan.
+
+REASON FOR DENIAL:
+
+1. MEDICAL NECESSITY NOT ESTABLISHED
+   The clinical documentation submitted does not sufficiently establish that 
+   Pembrolizumab is medically necessary for this patient at this time. The submitted 
+   notes do not include objective measurable evidence that the requested treatment is 
+   the most clinically appropriate option.
+
+2. STEP THERAPY REQUIREMENTS NOT MET
+   Per MedAdvantage Premier Plan formulary policy (Policy MP-ONC-2024-07), 
+   immunotherapy agents including Pembrolizumab require documented failure of at least 
+   one standard platinum-based chemotherapy regimen. The submitted documentation does 
+   not include adequate evidence of prior chemotherapy trial and documented failure.
+
+3. MISSING DOCUMENTATION
+   The following documentation was not included or was insufficient:
+   - PD-L1 expression test results with TPS score
+   - Documented reason for discontinuation of prior chemotherapy
+   - Treating physician statement of medical necessity
+   - ECOG performance status assessment
+
+APPEAL RIGHTS:
+
+You have the right to appeal this decision. Your appeal must be submitted within 
+30 days of the date of this letter (by May 15, 2025). 
+
+To submit an appeal, send the following to appeals@medadvantagepremier.com:
+- Written appeal letter explaining why the denial should be reversed
+- All missing documentation listed above
+- Any additional clinical information supporting medical necessity
+
+An expedited appeal may be requested if a standard appeal timeframe would seriously 
+jeopardize the patient's life, health, or ability to regain maximum function.
+
+IMPORTANT: This denial is subject to review under applicable state and federal law 
+including the Affordable Care Act external review provisions.
+
+Sincerely,
+
+Dr. Marcus Webb, MD
+Medical Director, Prior Authorization Review
+MedAdvantage Premier Plan

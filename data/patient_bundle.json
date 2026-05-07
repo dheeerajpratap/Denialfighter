@@ -1,0 +1,610 @@
+{
+  "resourceType": "Bundle",
+  "id": "denialfighter-patient-bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "meta": {
+          "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Sarah Chen</div>"
+        },
+        "identifier": [
+          {
+            "system": "http://medadvantagepremier.com/member-id",
+            "value": "MCR-2024-887234"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "use": "official",
+            "family": "Chen",
+            "given": ["Sarah"]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1968-03-14",
+        "address": [
+          {
+            "use": "home",
+            "line": ["123 Oak Street"],
+            "city": "Phoenix",
+            "state": "AZ",
+            "postalCode": "85001",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1234567890"
+          }
+        ],
+        "active": true,
+        "name": [
+          {
+            "family": "Rajan",
+            "given": ["Anita"],
+            "prefix": ["Dr."],
+            "suffix": ["MD"]
+          }
+        ],
+        "qualification": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0360",
+                  "code": "MD",
+                  "display": "Doctor of Medicine"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c3d4e5f6-a7b8-9012-cdef-123456789012",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "active": true,
+        "name": "Southwest Oncology Associates",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "602-555-0187"
+          },
+          {
+            "system": "fax",
+            "value": "602-555-0188"
+          }
+        ],
+        "address": [
+          {
+            "city": "Phoenix",
+            "state": "AZ",
+            "postalCode": "85001",
+            "country": "US"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Organization"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d4e5f6a7-b8c9-0123-defa-234567890123",
+      "resource": {
+        "resourceType": "Coverage",
+        "id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+        "status": "active",
+        "subscriberId": "MCR-2024-887234",
+        "beneficiary": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self",
+              "display": "Self"
+            }
+          ]
+        },
+        "payor": [
+          {
+            "display": "MedAdvantage Premier Plan"
+          }
+        ],
+        "class": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/coverage-class",
+                  "code": "plan",
+                  "display": "Plan"
+                }
+              ]
+            },
+            "value": "MAPP-2024",
+            "name": "MedAdvantage Premier Plan"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Coverage"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e5f6a7b8-c9d0-1234-efab-345678901234",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "C34.11",
+              "display": "Malignant neoplasm of upper lobe, right bronchus or lung"
+            }
+          ],
+          "text": "Malignant neoplasm of upper lobe of right bronchus"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "onsetDateTime": "2024-06-01",
+        "recordedDate": "2024-06-01"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:f6a7b8c9-d0e1-2345-fabc-456789012345",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+        "status": "active",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1876356",
+              "display": "Pembrolizumab 25 MG/ML Injectable Solution [Keytruda]"
+            }
+          ],
+          "text": "Pembrolizumab (Keytruda) 200mg IV every 3 weeks"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "authoredOn": "2024-10-15",
+        "requester": {
+          "reference": "urn:uuid:b2c3d4e5-f6a7-8901-bcde-f12345678901",
+          "display": "Dr. Anita Rajan, MD"
+        },
+        "dosageInstruction": [
+          {
+            "text": "200mg IV every 3 weeks",
+            "timing": {
+              "repeat": {
+                "frequency": 1,
+                "period": 3,
+                "periodUnit": "wk"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 200,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "reasonReference": [
+          {
+            "reference": "urn:uuid:e5f6a7b8-c9d0-1234-efab-345678901234"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationRequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a7b8c9d0-e1f2-3456-abcd-567890123456",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "a7b8c9d0-e1f2-3456-abcd-567890123456",
+        "status": "stopped",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "40048",
+              "display": "Carboplatin"
+            }
+          ],
+          "text": "Carboplatin 400mg IV every 3 weeks"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "authoredOn": "2024-07-01",
+        "requester": {
+          "reference": "urn:uuid:b2c3d4e5-f6a7-8901-bcde-f12345678901",
+          "display": "Dr. Anita Rajan, MD"
+        },
+        "statusReason": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "182992009",
+              "display": "Treatment completed"
+            }
+          ],
+          "text": "Disease progression documented in oncology note — tumor growth observed on imaging at 3-month follow-up"
+        },
+        "dosageInstruction": [
+          {
+            "text": "400mg IV every 3 weeks",
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 400,
+                  "unit": "mg",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2024-07-01",
+            "end": "2024-09-28"
+          }
+        },
+        "reasonReference": [
+          {
+            "reference": "urn:uuid:e5f6a7b8-c9d0-1234-efab-345678901234"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationRequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b8c9d0e1-f2a3-4567-bcde-678901234567",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "b8c9d0e1-f2a3-4567-bcde-678901234567",
+        "status": "stopped",
+        "intent": "order",
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "56946",
+              "display": "Paclitaxel"
+            }
+          ],
+          "text": "Paclitaxel 175mg/m2 IV every 3 weeks"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "authoredOn": "2024-07-01",
+        "requester": {
+          "reference": "urn:uuid:b2c3d4e5-f6a7-8901-bcde-f12345678901",
+          "display": "Dr. Anita Rajan, MD"
+        },
+        "statusReason": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "182992009",
+              "display": "Treatment completed"
+            }
+          ],
+          "text": "Disease progression + Grade 2 peripheral neuropathy — dose-limiting toxicity requiring discontinuation"
+        },
+        "dosageInstruction": [
+          {
+            "text": "175mg/m2 IV every 3 weeks",
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 175,
+                  "unit": "mg/m2",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "mg/m2"
+                }
+              }
+            ]
+          }
+        ],
+        "dispenseRequest": {
+          "validityPeriod": {
+            "start": "2024-07-01",
+            "end": "2024-09-28"
+          }
+        },
+        "reasonReference": [
+          {
+            "reference": "urn:uuid:e5f6a7b8-c9d0-1234-efab-345678901234"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "MedicationRequest"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c9d0e1f2-a3b4-5678-cdef-789012345678",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "c9d0e1f2-a3b4-5678-cdef-789012345678",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "LAB",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85319-2",
+              "display": "PD-L1 by clone 22C3"
+            }
+          ],
+          "text": "PD-L1 Expression Test (TPS Score)"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "effectiveDateTime": "2024-09-30",
+        "issued": "2024-09-30T00:00:00Z",
+        "performer": [
+          {
+            "display": "Quest Diagnostics"
+          }
+        ],
+        "result": [
+          {
+            "reference": "urn:uuid:d0e1f2a3-b4c5-6789-defa-890123456789"
+          }
+        ],
+        "conclusion": "PD-L1 Tumor Proportion Score (TPS) greater than or equal to 50%. Patient is a candidate for pembrolizumab monotherapy per NCCN guidelines for Non-Small Cell Lung Cancer.",
+        "conclusionCode": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "260374005",
+                "display": "PD-L1 positive"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "DiagnosticReport"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d0e1f2a3-b4c5-6789-defa-890123456789",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d0e1f2a3-b4c5-6789-defa-890123456789",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85319-2",
+              "display": "PD-L1 by clone 22C3 in Tissue by Immune stain"
+            }
+          ],
+          "text": "PD-L1 TPS Score"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "effectiveDateTime": "2024-09-30",
+        "valueString": "PD-L1 TPS >= 50%",
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ],
+            "text": "High PD-L1 expression — TPS >= 50%"
+          }
+        ],
+        "note": [
+          {
+            "text": "Tumor Proportion Score (TPS) of 50% or greater. This result meets the biomarker threshold established by KEYNOTE-024 for pembrolizumab monotherapy as first-line treatment in metastatic NSCLC."
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e1f2a3b4-c5d6-7890-efab-901234567890",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "e1f2a3b4-c5d6-7890-efab-901234567890",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "survey",
+                "display": "Survey"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "89247-1",
+              "display": "ECOG Performance Status score"
+            }
+          ],
+          "text": "ECOG Performance Status"
+        },
+        "subject": {
+          "reference": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        },
+        "effectiveDateTime": "2024-10-10",
+        "valueInteger": 1,
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "422512005",
+                "display": "ECOG performance status - grade 1"
+              }
+            ],
+            "text": "ECOG PS 1 — Restricted in physically strenuous activity but ambulatory and able to carry out work of a light or sedentary nature"
+          }
+        ],
+        "note": [
+          {
+            "text": "Patient is fully ambulatory. ECOG PS 1 confirms eligibility for systemic oncology treatment including pembrolizumab monotherapy per NCCN NSCLC v2.2024 criteria (PS 0-2 required)."
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    }
+  ]
+}
