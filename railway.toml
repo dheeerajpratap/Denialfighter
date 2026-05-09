@@ -10,3 +10,5 @@ restartPolicyMaxRetries = 3
 
 [variables]
 FHIR_BASE_URL = "https://hapi.fhir.org/baseR4"
+# After first deploy, set MCP_BASE_URL to your Railway public URL in the dashboard:
+# MCP_BASE_URL = "https://your-app.railway.app"

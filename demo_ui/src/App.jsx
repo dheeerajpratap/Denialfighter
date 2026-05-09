@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
-const API = "http://localhost:8000";
-const PAYER_API = "http://localhost:8001";
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const PAYER_API = import.meta.env.VITE_PAYER_API_URL || "http://localhost:8001";
 
 const DENIAL_LETTER = `MedAdvantage Premier Plan
 Prior Authorization Appeals Department

@@ -1,17 +1,22 @@
 """
-FHIR R4 REST client for HAPI public test server.
+FHIR R4 REST client.
+Supports both a static base URL (local dev / Railway) and dynamic
+per-request context injected by Prompt Opinion (SHARP Extension Specs).
 """
+import os
 import requests
 from typing import Optional
 
-HAPI_BASE = "https://hapi.fhir.org/baseR4"
+HAPI_BASE = os.getenv("FHIR_BASE_URL", "https://hapi.fhir.org/baseR4")
 HEADERS = {"Accept": "application/fhir+json"}
 
 class FHIRClient:
-    def __init__(self, base_url: str = HAPI_BASE):
-        self.base_url = base_url
+    def __init__(self, base_url: str = None, access_token: str = None):
+        self.base_url = base_url or HAPI_BASE
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
+        if access_token:
+            self.session.headers["Authorization"] = f"Bearer {access_token}"
 
     def get_patient(self, patient_id: str) -> dict:
         r = self.session.get(f"{self.base_url}/Patient/{patient_id}", timeout=15)

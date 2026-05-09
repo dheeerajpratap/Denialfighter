@@ -3,13 +3,14 @@ DenialFighter Orchestrator
 Wires all 3 agents + MCP FHIR tool into a complete pipeline.
 """
 import json
+import os
 import time
 import requests
 import uuid
 from pathlib import Path
 from agents import denial_intake_agent, evidence_match_agent, appeal_draft_agent
 
-MCP_BASE = "http://localhost:8000"  # Change to Railway URL when deployed
+MCP_BASE = os.getenv("MCP_BASE_URL", "http://localhost:8000")
 SHARP_HEADERS = {
     "X-SHARP-Patient-ID": "",  # Set per-request
     "X-SHARP-Tenant-ID": "denialfighter-hackathon",

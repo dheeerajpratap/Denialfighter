@@ -17,7 +17,7 @@ from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from mcp_server.fhir_client import FHIRClient
-from mcp_server.sharp_middleware import validate_sharp_context
+from mcp_server.sharp_middleware import validate_sharp_context, get_patient_id_from_sharp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,7 +35,21 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-fhir = FHIRClient()
+def _fhir(request: Request) -> FHIRClient:
+    """Creates a per-request FHIRClient using Prompt Opinion context headers."""
+    ctx = getattr(request.state, "po_context", {})
+    return FHIRClient(
+        base_url=ctx.get("fhir_server_url"),
+        access_token=ctx.get("fhir_access_token"),
+    )
+
+@app.get("/")
+async def root():
+    return {"status": "online", "message": "DenialFighter MCP Server is running. Use /.well-known/mcp.json for the manifest."}
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return {}
 
 # Base URL for internal MCP tool calls (localhost in dev, Railway URL in prod)
 _MCP_BASE_URL = os.getenv("MCP_BASE_URL", "http://localhost:8000")
@@ -43,6 +57,41 @@ _MCP_BASE_URL = os.getenv("MCP_BASE_URL", "http://localhost:8000")
 # --- In-memory job store for pipeline runs ---
 _jobs: dict = {}
 _executor = ThreadPoolExecutor(max_workers=4)
+
+# --- A2A Agent Card ---
+
+@app.get("/.well-known/agent.json")
+async def a2a_agent_card():
+    base_url = os.getenv("MCP_BASE_URL", "http://localhost:8000")
+    return {
+        "name": "DenialFighter",
+        "description": "AI agent that fights insurance prior authorization denials. Reads FHIR patient charts, matches clinical evidence to denial reasons, and generates complete appeal letters in under 90 seconds.",
+        "url": base_url,
+        "version": "1.0.0",
+        "capabilities": {
+            "streaming": False,
+            "pushNotifications": False,
+            "stateTransitionHistory": True
+        },
+        "defaultInputModes": ["application/json"],
+        "defaultOutputModes": ["application/json"],
+        "skills": [
+            {
+                "id": "prior_auth_appeal",
+                "name": "Prior Authorization Appeal",
+                "description": "Given a denial letter and FHIR patient ID, runs a 3-agent pipeline to parse the denial, match clinical evidence, and draft a complete appeal letter.",
+                "tags": ["healthcare", "prior-auth", "fhir", "appeal", "insurance"],
+                "examples": [
+                    "Fight a Pembrolizumab denial for a lung cancer patient",
+                    "Appeal a step-therapy denial with FHIR chart evidence",
+                    "Generate appeal letter from denial reference PA-2025-44921"
+                ],
+                "inputModes": ["application/json"],
+                "outputModes": ["application/json"]
+            }
+        ]
+    }
+
 
 # --- MCP Manifest ---
 
@@ -125,13 +174,14 @@ async def mcp_manifest():
 # --- Tool Endpoints ---
 
 class PatientRequest(BaseModel):
-    patient_id: str
+    patient_id: str = ""  # may be omitted when Prompt Opinion passes x-patient-id header
 
 @app.post("/tools/get_patient_summary")
 async def tool_get_patient_summary(req: PatientRequest, request: Request):
     await validate_sharp_context(request)
+    pid = get_patient_id_from_sharp(request, req.patient_id)
     try:
-        return fhir.get_patient_summary(req.patient_id)
+        return _fhir(request).get_patient_summary(pid)
     except Exception as e:
         logger.error(f"FHIR error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -139,32 +189,36 @@ async def tool_get_patient_summary(req: PatientRequest, request: Request):
 @app.post("/tools/get_active_medications")
 async def tool_get_active_medications(req: PatientRequest, request: Request):
     await validate_sharp_context(request)
+    pid = get_patient_id_from_sharp(request, req.patient_id)
     try:
-        return {"medications": fhir.get_active_medications(req.patient_id)}
+        return {"medications": _fhir(request).get_active_medications(pid)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/tools/get_conditions")
 async def tool_get_conditions(req: PatientRequest, request: Request):
     await validate_sharp_context(request)
+    pid = get_patient_id_from_sharp(request, req.patient_id)
     try:
-        return {"conditions": fhir.get_conditions(req.patient_id)}
+        return {"conditions": _fhir(request).get_conditions(pid)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/tools/get_diagnostic_reports")
 async def tool_get_diagnostic_reports(req: PatientRequest, request: Request):
     await validate_sharp_context(request)
+    pid = get_patient_id_from_sharp(request, req.patient_id)
     try:
-        return {"reports": fhir.get_diagnostic_reports(req.patient_id)}
+        return {"reports": _fhir(request).get_diagnostic_reports(pid)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/tools/get_medication_history")
 async def tool_get_medication_history(req: PatientRequest, request: Request):
     await validate_sharp_context(request)
+    pid = get_patient_id_from_sharp(request, req.patient_id)
     try:
-        return {"history": fhir.get_medication_history(req.patient_id)}
+        return {"history": _fhir(request).get_medication_history(pid)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
