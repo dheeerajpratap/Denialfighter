@@ -7,6 +7,7 @@ Run locally:  uvicorn mcp_server.main:app --reload --port 8000
 Deploy:       Railway (see railway.toml)
 """
 import logging
+import os
 import asyncio
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -35,6 +36,9 @@ app.add_middleware(
 )
 
 fhir = FHIRClient()
+
+# Base URL for internal MCP tool calls (localhost in dev, Railway URL in prod)
+_MCP_BASE_URL = os.getenv("MCP_BASE_URL", "http://localhost:8000")
 
 # --- In-memory job store for pipeline runs ---
 _jobs: dict = {}
@@ -193,25 +197,26 @@ def _run_pipeline_sync(job_id: str, patient_id: str, denial_letter: str):
                 "X-SHARP-Tenant-ID": "denialfighter-ui",
                 "X-SHARP-Session-ID": session_id,
             }
+            base = _MCP_BASE_URL
             fhir_chart = {
                 "patient_summary": req_lib.post(
-                    "http://localhost:8000/tools/get_patient_summary",
+                    f"{base}/tools/get_patient_summary",
                     json={"patient_id": patient_id}, headers=headers, timeout=20
                 ).json(),
                 "active_medications": req_lib.post(
-                    "http://localhost:8000/tools/get_active_medications",
+                    f"{base}/tools/get_active_medications",
                     json={"patient_id": patient_id}, headers=headers, timeout=20
                 ).json().get("medications", []),
                 "conditions": req_lib.post(
-                    "http://localhost:8000/tools/get_conditions",
+                    f"{base}/tools/get_conditions",
                     json={"patient_id": patient_id}, headers=headers, timeout=20
                 ).json().get("conditions", []),
                 "diagnostic_reports": req_lib.post(
-                    "http://localhost:8000/tools/get_diagnostic_reports",
+                    f"{base}/tools/get_diagnostic_reports",
                     json={"patient_id": patient_id}, headers=headers, timeout=20
                 ).json().get("reports", []),
                 "medication_history": req_lib.post(
-                    "http://localhost:8000/tools/get_medication_history",
+                    f"{base}/tools/get_medication_history",
                     json={"patient_id": patient_id}, headers=headers, timeout=20
                 ).json().get("history", []),
             }
