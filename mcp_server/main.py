@@ -51,8 +51,9 @@ async def root():
 async def favicon():
     return {}
 
-# Base URL for internal MCP tool calls (localhost in dev, Railway URL in prod)
-_MCP_BASE_URL = os.getenv("MCP_BASE_URL", "http://localhost:8000")
+# Base URL for internal MCP tool calls — uses RAILWAY_PUBLIC_DOMAIN automatically in prod
+_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN")
+_MCP_BASE_URL = os.getenv("MCP_BASE_URL") or (f"https://{_railway_domain}" if _railway_domain else "http://localhost:8000")
 
 # --- In-memory job store for pipeline runs ---
 _jobs: dict = {}

@@ -10,7 +10,8 @@ import uuid
 from pathlib import Path
 from agents import denial_intake_agent, evidence_match_agent, appeal_draft_agent
 
-MCP_BASE = os.getenv("MCP_BASE_URL", "http://localhost:8000")
+_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN")
+MCP_BASE = os.getenv("MCP_BASE_URL") or (f"https://{_railway_domain}" if _railway_domain else "http://localhost:8000")
 SHARP_HEADERS = {
     "X-SHARP-Patient-ID": "",  # Set per-request
     "X-SHARP-Tenant-ID": "denialfighter-hackathon",
