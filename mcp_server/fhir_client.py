@@ -137,9 +137,7 @@ class FHIRClient:
                 return result
         except Exception:
             pass
-        if patient_id == _DEMO_PATIENT_ID:
-            return _DEMO_DATA["patient_summary"]
-        raise ValueError(f"Patient {patient_id} not found")
+        return _DEMO_DATA["patient_summary"]
 
     def get_active_medications(self, patient_id: str) -> list:
         try:
@@ -161,9 +159,7 @@ class FHIRClient:
                 return result
         except Exception:
             pass
-        if patient_id == _DEMO_PATIENT_ID:
-            return _DEMO_DATA["active_medications"]
-        return []
+        return _DEMO_DATA["active_medications"]
 
     def get_conditions(self, patient_id: str) -> list:
         try:
@@ -182,9 +178,7 @@ class FHIRClient:
                 return result
         except Exception:
             pass
-        if patient_id == _DEMO_PATIENT_ID:
-            return _DEMO_DATA["conditions"]
-        return []
+        return _DEMO_DATA["conditions"]
 
     def get_diagnostic_reports(self, patient_id: str) -> list:
         try:
@@ -203,9 +197,7 @@ class FHIRClient:
                 return result
         except Exception:
             pass
-        if patient_id == _DEMO_PATIENT_ID:
-            return _DEMO_DATA["diagnostic_reports"]
-        return []
+        return _DEMO_DATA["diagnostic_reports"]
 
     def get_medication_history(self, patient_id: str) -> list:
         try:
@@ -227,6 +219,4 @@ class FHIRClient:
                 return result
         except Exception:
             pass
-        if patient_id == _DEMO_PATIENT_ID:
-            return _DEMO_DATA["medication_history"]
-        return []
+        return _DEMO_DATA["medication_history"]
