@@ -6,6 +6,7 @@ Also exposes /run-appeal for the Demo UI to call the full pipeline.
 Run locally:  uvicorn mcp_server.main:app --reload --port 8000
 Deploy:       Railway (see railway.toml)
 """
+import json
 import logging
 import os
 import asyncio
@@ -43,6 +44,102 @@ def _fhir(request: Request) -> FHIRClient:
         access_token=ctx.get("fhir_access_token"),
     )
 
+# Base URL for internal MCP tool calls — uses RAILWAY_PUBLIC_DOMAIN automatically in prod
+_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN")
+_MCP_BASE_URL = os.getenv("MCP_BASE_URL") or (f"https://{_railway_domain}" if _railway_domain else "http://localhost:8000")
+
+# --- In-memory job store for pipeline runs ---
+_jobs: dict = {}
+_executor = ThreadPoolExecutor(max_workers=4)
+
+_MCP_TOOLS = [
+    {
+        "name": "get_patient_summary",
+        "description": "Get patient demographics and insurance information from FHIR",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"patient_id": {"type": "string", "description": "FHIR Patient resource ID"}},
+            "required": ["patient_id"]
+        }
+    },
+    {
+        "name": "get_active_medications",
+        "description": "Get currently active medications from FHIR MedicationRequest resources",
+        "inputSchema": {"type": "object", "properties": {"patient_id": {"type": "string"}}, "required": ["patient_id"]}
+    },
+    {
+        "name": "get_conditions",
+        "description": "Get patient diagnoses and conditions with ICD-10 codes",
+        "inputSchema": {"type": "object", "properties": {"patient_id": {"type": "string"}}, "required": ["patient_id"]}
+    },
+    {
+        "name": "get_diagnostic_reports",
+        "description": "Get lab results and diagnostic reports including pathology and imaging",
+        "inputSchema": {"type": "object", "properties": {"patient_id": {"type": "string"}}, "required": ["patient_id"]}
+    },
+    {
+        "name": "get_medication_history",
+        "description": "Get prior medications including stopped/completed — used to prove step therapy",
+        "inputSchema": {"type": "object", "properties": {"patient_id": {"type": "string"}}, "required": ["patient_id"]}
+    }
+]
+
+# --- MCP JSON-RPC handler (Streamable HTTP transport) ---
+
+async def _handle_mcp_message(msg: dict, request: Request) -> Optional[dict]:
+    method = msg.get("method", "")
+    msg_id = msg.get("id")
+
+    if method == "initialize":
+        return {
+            "jsonrpc": "2.0", "id": msg_id,
+            "result": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {"tools": {}},
+                "serverInfo": {"name": "DenialFighter FHIR Reader", "version": "1.0.0"}
+            }
+        }
+
+    if method == "notifications/initialized":
+        return None  # notification — no response
+
+    if method == "tools/list":
+        return {
+            "jsonrpc": "2.0", "id": msg_id,
+            "result": {"tools": _MCP_TOOLS}
+        }
+
+    if method == "tools/call":
+        params = msg.get("params", {})
+        tool_name = params.get("name", "")
+        args = params.get("arguments", {})
+        await validate_sharp_context(request)
+        pid = get_patient_id_from_sharp(request, args.get("patient_id", ""))
+        try:
+            fhir = _fhir(request)
+            if tool_name == "get_patient_summary":
+                data = fhir.get_patient_summary(pid)
+            elif tool_name == "get_active_medications":
+                data = {"medications": fhir.get_active_medications(pid)}
+            elif tool_name == "get_conditions":
+                data = {"conditions": fhir.get_conditions(pid)}
+            elif tool_name == "get_diagnostic_reports":
+                data = {"reports": fhir.get_diagnostic_reports(pid)}
+            elif tool_name == "get_medication_history":
+                data = {"history": fhir.get_medication_history(pid)}
+            else:
+                return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": -32601, "message": f"Unknown tool: {tool_name}"}}
+            return {
+                "jsonrpc": "2.0", "id": msg_id,
+                "result": {"content": [{"type": "text", "text": json.dumps(data)}]}
+            }
+        except Exception as e:
+            logger.error(f"MCP tool call error [{tool_name}]: {e}")
+            return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": -32603, "message": str(e)}}
+
+    return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": -32601, "message": f"Method not found: {method}"}}
+
+
 @app.get("/")
 async def root():
     return {"status": "online", "message": "DenialFighter MCP Server is running. Use /.well-known/mcp.json for the manifest."}
@@ -51,13 +148,18 @@ async def root():
 async def favicon():
     return {}
 
-# Base URL for internal MCP tool calls — uses RAILWAY_PUBLIC_DOMAIN automatically in prod
-_railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN")
-_MCP_BASE_URL = os.getenv("MCP_BASE_URL") or (f"https://{_railway_domain}" if _railway_domain else "http://localhost:8000")
+@app.post("/")
+async def mcp_jsonrpc(request: Request):
+    """MCP Streamable HTTP transport endpoint — handles JSON-RPC from Prompt Opinion."""
+    body = await request.json()
+    if isinstance(body, list):
+        responses = [r for r in [await _handle_mcp_message(m, request) for m in body] if r is not None]
+        return responses
+    result = await _handle_mcp_message(body, request)
+    if result is None:
+        return {}
+    return result
 
-# --- In-memory job store for pipeline runs ---
-_jobs: dict = {}
-_executor = ThreadPoolExecutor(max_workers=4)
 
 # --- A2A Agent Card ---
 
