@@ -95,7 +95,20 @@ async def _handle_mcp_message(msg: dict, request: Request) -> Optional[dict]:
             "jsonrpc": "2.0", "id": msg_id,
             "result": {
                 "protocolVersion": "2024-11-05",
-                "capabilities": {"tools": {}},
+                "capabilities": {
+                    "tools": {},
+                    "extensions": {
+                        "ai.promptopinion/fhir-context": {
+                            "scopes": [
+                                {"name": "patient/Patient.rs",           "required": True},
+                                {"name": "patient/MedicationRequest.rs", "required": True},
+                                {"name": "patient/Condition.rs",         "required": True},
+                                {"name": "patient/DiagnosticReport.rs",  "required": True},
+                                {"name": "patient/Coverage.rs"}
+                            ]
+                        }
+                    }
+                },
                 "serverInfo": {"name": "DenialFighter FHIR Reader", "version": "1.0.0"}
             }
         }
